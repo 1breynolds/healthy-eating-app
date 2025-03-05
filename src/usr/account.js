@@ -1,10 +1,12 @@
 import React, { useState, useEffect, } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 import '../App.css';
 
 const Account = () => {
     const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');       
+    const [lastName, setLastName] = useState('');
+    const [age, setAge] = useState('');     
     const [height, setHeight] = useState('');
     const [weight, setWeight] = useState('');
     const navigate = useNavigate();
@@ -24,21 +26,23 @@ const Account = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-
-        // Update details
-        currentUser.firstName = firstName;
-        currentUser.lastName = lastName;
-        currentUser.height = height;
-        currentUser.weight = weight;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-        // Update users array
-        const updatedUsers = users.map(user => 
-            user.username === currentUser.username ? currentUser : user
-        );
-        localStorage.setItem('users', JSON.stringify(updatedUsers));
-        navigate('/user-home');
+        if (currentUser) {
+            try {
+                const response = axios.put(`http://localhost:5000/api/user/${currentUser.userId}`, {
+                    firstName,
+                    lastName,
+                    age,
+                    height,
+                    weight
+                });
+                localStorage.setItem('currentUser', JSON.stringify(response.data));
+                navigate('/user-home');
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            console.error("No current user found in local storage")
+        }
     };
 
     const handleCancel = () => {
@@ -49,29 +53,35 @@ const Account = () => {
         <div className="container">
             <h1>Edit Account Information</h1>
             <form onSubmit={handleSubmit}>
-                <input 
+            <input
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="First Name" 
+                    placeholder="First Name"
                 />
-                <input 
+                <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Last Name" 
+                    placeholder="Last Name"
                 />
-                <input 
+                <input
+                    type="number"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    placeholder="Age"
+                />
+                <input
                     type="text"
                     value={height}
                     onChange={(e) => setHeight(e.target.value)}
-                    placeholder="Height" 
+                    placeholder="Height: ft'in''"
                 />
-                <input 
-                    type="text"
+                <input
+                    type="number"
                     value={weight}
                     onChange={(e) => setWeight(e.target.value)}
-                    placeholder="Weight" 
+                    placeholder="Weight: lbs"
                 />
                 <div className="button-container">
                     <button type="submit">Save</button>

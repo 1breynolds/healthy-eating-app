@@ -1,24 +1,30 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import '../App.css';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const user = users.find(user => user.username === username && user.password === password);
-        if (user) {
-            localStorage.setItem('currentUser', JSON.stringify(user));
+        try {
+            const response = await axios.post('http://localhost:5000/api/login', { username, password });
+            localStorage.setItem('currentUser', JSON.stringify(response.data));
+            console.log(response.data);
             navigate('/user-home');
-        } else {
-            alert('Invalid username or password');
-            return;
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                setError('Invalid username or password');
+            } else {
+                setError('An error occurred. Please try again later.');
+            }
         }
-    }
+    };
+
     return (
         <div className="container">
             <h1>Login</h1>
@@ -30,11 +36,12 @@ const Login = () => {
                     placeholder="Username" 
                 />
                 <input 
-                    type="text" 
+                    type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password"
                 />
+                {error && <p className="error">{error}</p>}
                 <div className="button-container">
                     <button type="submit">Login</button>
                     <Link to="/">

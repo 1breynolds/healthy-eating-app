@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios';
 import '../App.css';
 
 const Signup = () => {
@@ -8,23 +9,19 @@ const Signup = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const user = users.find(user => user.username === username);
-        if (user) {
-            alert('Username already exists');
-            return;
-        }
         if (password !== confirmPassword) {
             alert('Passwords do not match');
             return;
         }
-        const newUser = { username, password, firstName: '', lastName: '', height: '', weight: '' };
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
-        navigate('/new-user');
+        try {
+            const response = await axios.post('http://localhost:5000/api/signup', { username, password });
+            localStorage.setItem('currentUser', JSON.stringify(response.data));
+            navigate('/new-user');
+        } catch (error) {
+            alert(error.response.data.message);
+        }
     };
 
     return (
@@ -38,13 +35,13 @@ const Signup = () => {
                     placeholder="Username" 
                 />
                 <input 
-                    type="text"
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password" 
                 />
                 <input 
-                    type="text"
+                    type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm Password" 

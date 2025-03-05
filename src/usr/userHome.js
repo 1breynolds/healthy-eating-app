@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import '../App.css';
 
 const UserHome = () => {
@@ -11,13 +12,24 @@ const UserHome = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (!currentUser) {
-            navigate('/');
-        } else {
-            setUsername(currentUser.username);
-            setFirstName(currentUser.firstName || '');
-        }
+        const fetchUserData = async () => {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    navigate('/login');
+                } else {
+                    const response = await axios.get(`http://localhost:5000/api/user/${currentUser.userId}`);
+                    const userData = response.data;
+                    setUsername(userData.username);
+                    setFirstName(userData.firstName || '');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                navigate('/login');
+            }
+        };
+
+        fetchUserData();
     }, [navigate]);
 
     const handleLogout = () => {
