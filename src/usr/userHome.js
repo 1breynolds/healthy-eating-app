@@ -6,6 +6,7 @@ import '../App.css';
 
 const UserHome = () => {
     const [username, setUsername] = useState('');
+    const [firstName, setFirstName] = useState('');
     const [dropdown, setDropdown] = useState(false);
     const navigate = useNavigate();
 
@@ -15,6 +16,7 @@ const UserHome = () => {
             navigate('/');
         } else {
             setUsername(currentUser.username);
+            setFirstName(currentUser.firstName || '');
         }
     }, [navigate]);
 
@@ -29,21 +31,28 @@ const UserHome = () => {
 
     return (
         <div className="container">
-            <button onClick={toggleDropdown} className="dropdown-button">
-                <FontAwesomeIcon icon={faHouse} />
-            </button>
-            {dropdown && (
-                <div className="dropdown-content">
-                    <Link to="/account">Account</Link>
-                    <Link to="/settings">Settings</Link>
-                    <button onClick={handleLogout}>Logout</button>
-                </div>
-            )}
-            <h2>Welcome, {username}!</h2>
-            <p>What would you like to do?</p>
-            <div className="button-container">
+            <div className="dropdown-container">
+                <button onClick={toggleDropdown} className="dropdown-button">
+                    <FontAwesomeIcon icon={faHouse} />
+                </button>
+                {dropdown && (
+                    <div className="dropdown-content">
+                        <Link to="/account">Account</Link>
+                        <Link to="/settings">Settings</Link>
+                        <button onClick={handleLogout}>Logout</button>
+                    </div>
+                )}
+            </div>
+            <h2>Welcome, {firstName || username}!</h2>
+            <div className="button-container-vertical">
                 <Link to="/log-meal">
                     <button>Log Meal</button>
+                </Link>
+                <Link to="/recipes">
+                    <button>Recipes</button>
+                </Link>
+                <Link to="/chatbot">
+                    <button>Chat</button>
                 </Link>
             </div>
         </div>

@@ -13,10 +13,10 @@ body {
   background-color: #4CAF50;
   min-height: 60px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-size: 1.5em;
+  font-size: 2em;
   color: white;
   padding: 10px;
 }
@@ -43,13 +43,39 @@ p {
 
 .App-logo {
   height: 80px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.Home-logo { 
+  height: 300px;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
   gap: 10px;
+}
+
+.button-container-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; 
+}
+
+.button-container-vertical button {
+  width: 150px;
+  padding: 10px;
+  font-size: 1em;
+  color: white;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-container-vertical button:hover {
+  background-color: #45a049;
 }
 
 form {
@@ -92,20 +118,21 @@ button:hover {
   background-color: #d32f2f;
 }
 
+.remove-button {
+  background: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  margin-left: 10px;
+}
+
+.remove-button:hover {
+  background-color: darkred;
+}
+
 .result {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #ccc;
-}
-
-.positive {
-  color: green;
-  font-weight: bold;
-}
-
-.negative {
-  color: red;
-  font-weight: bold;
 }
 
 .header {
@@ -117,6 +144,12 @@ button:hover {
 .dropdown {
   position: relative;
   display: inline-block;
+}
+
+.dropdown-container {
+  position: absolute;
+  top: 30px;
+  right: 20px;
 }
 
 .dropdown-button {

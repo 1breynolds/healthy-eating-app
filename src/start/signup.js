@@ -10,15 +10,21 @@ const Signup = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(user => user.username === username);
+        if (user) {
+            alert('Username already exists');
+            return;
+        }
         if (password !== confirmPassword) {
             alert('Passwords do not match');
             return;
         }
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const newUser = { username, password };
+        const newUser = { username, password, firstName: '', lastName: '', height: '', weight: '' };
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
-        navigate('/login');
+        localStorage.setItem('currentUser', JSON.stringify(newUser));
+        navigate('/new-user');
     };
 
     return (

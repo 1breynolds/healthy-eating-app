@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '../App.css';
 
 const MealLogger = () => {
@@ -12,6 +12,11 @@ const MealLogger = () => {
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (!currentUser) {
             navigate('/login');
+        } else {
+            const userLog = JSON.parse(localStorage.getItem('userLog')) || {};
+            if (userLog[currentUser.username]) {
+                setLog(userLog[currentUser.username]);
+            }
         }
     }, [navigate]);
 
@@ -21,6 +26,32 @@ const MealLogger = () => {
         setLog([...log, newLog]);
         setMeal('');
         setCalories('');
+    };
+
+    const handleFinalSubmit = () => {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            const userLog = JSON.parse(localStorage.getItem('userLog')) || {};
+            userLog[currentUser.username] = log;
+            localStorage.setItem('userLog', JSON.stringify(userLog));
+            navigate('/user-home');
+        }
+    };
+
+    const handleCancel = () => {
+        navigate('/user-home');
+    };
+
+    const handleRemove = (index) => {
+        const newLog = log.filter((_, i) => i !== index);
+        setLog(newLog);
+
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            const userLog = JSON.parse(localStorage.getItem('userLog')) || {};
+            userLog[currentUser.username] = newLog;
+            localStorage.setItem('userLog', JSON.stringify(userLog));
+        }
     };
 
     return (
@@ -41,9 +72,6 @@ const MealLogger = () => {
                 />
                 <div className="button-container">
                     <button type="submit">Add Meal</button>
-                        <Link to="/user-home">
-                            <button type="button" className="cancel-button">Cancel</button>
-                        </Link>
                 </div>
             </form>
             <div className="result">
@@ -52,9 +80,19 @@ const MealLogger = () => {
                     {log.map((entry, index) => (
                         <li key={index}>
                             <strong>{entry.meal}</strong> - {entry.calories} calories
+                            <button
+                                className="remove-button"
+                                onClick={() => handleRemove(index)}
+                            >
+                                &#10060;
+                            </button>
                         </li>
                     ))}
                 </ul>
+                <div className="button-container">
+                    <button type="button" onClick={handleFinalSubmit}>Submit</button>
+                    <button type="button" onClick={handleCancel} className="cancel-button">Cancel</button>
+                </div>
             </div>
         </div>
     );
